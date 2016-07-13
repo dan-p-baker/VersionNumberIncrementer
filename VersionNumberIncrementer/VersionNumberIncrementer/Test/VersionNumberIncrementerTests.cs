@@ -29,7 +29,7 @@ namespace VersionNumberIncrementer.Test
         }
 
         [TestCase("1.0.1.11", "1.0.2.0")]
-        public void Feature_command_increments_major_version_number_by_on_and_resets_minor_version_to_zero(string previousVersionNumber, string expectedVersionNumber)
+        public void Feature_command_increments_major_version_number_by_one_and_resets_minor_version_to_zero(string previousVersionNumber, string expectedVersionNumber)
         {
             const Release.ReleaseTypeEnum releaseType = Release.ReleaseTypeEnum.Feature;
 
@@ -67,7 +67,7 @@ namespace VersionNumberIncrementer.Test
         }
 
         [TestCase("1.0.1.asdf2")]
-        public void Invalid_version_number_throws_format_exception(string invalidVersionNumber)
+        public void Invalid_version_number_throws_FormatException(string invalidVersionNumber)
         {
             Assert.Throws<FormatException>(() =>
             {
@@ -76,7 +76,7 @@ namespace VersionNumberIncrementer.Test
         }
 
         [Test]
-        public void Attempting_to_increment_version_number_past_max_int_throws_overflow_exception()
+        public void Attempting_to_increment_version_number_past_max_int_throws_ArgumentOutOfRangeException()
         {
             const int maxInt = int.MaxValue;
             var versionNumberAtMaxInt = $"1.0.0.{maxInt}";
