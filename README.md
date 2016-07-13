@@ -1,4 +1,4 @@
-# VersionNumberIncrementer
+# Version Number Incrementer
 
 **Application written in c# 6.0**
 
