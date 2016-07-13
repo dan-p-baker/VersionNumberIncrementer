@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 
 namespace VersionNumberIncrementer.Domain
 {
@@ -10,70 +9,40 @@ namespace VersionNumberIncrementer.Domain
             Feature,
             BugFix
         }
+        protected Version _version;
 
-        protected int _majorVersion;
-        protected int _minorVersion;
-        protected int _placeHolder1Version;
-        protected int _placeHolder2Version;
-        protected int _releaseType;
-        protected string _versionNumber;
+        public Version Version => _version;
 
-        public Release(string versionNumber, int releaseType)
+        public Release(string versionNumber)
         {
-            _versionNumber = versionNumber;
-            _releaseType = releaseType;
-
-            var regex = new Regex(@"^(?<PlaceHolder1>\d+)\.(?<PlaceHolder2>\d+)\.(?<Major>\d+)\.(?<Minor>\d+)$");
-            var match = regex.Match(versionNumber);
-
-            if (!match.Success)
-                return;
-
-            _placeHolder1Version = Convert.ToInt32(match.Groups["PlaceHolder1"].Value);
-            _placeHolder2Version = Convert.ToInt32(match.Groups["PlaceHolder2"].Value);
-            _majorVersion = Convert.ToInt32(match.Groups["Major"].Value);
-            _minorVersion = Convert.ToInt32(match.Groups["Minor"].Value);
+            _version = ParseVersion(versionNumber);
         }
 
-        public string VersionNumber
+        private static Version ParseVersion(string input)
         {
-            get
+            Version version;
+
+            if (Version.TryParse(input, out version))
+                return version;
+
+            throw new FormatException("Invalid version number entered.");
+        }
+
+        public Release IncrementVersion(ReleaseTypeEnum releaseType)
+        {
+            Version newVersionNumber;
+            switch (releaseType)
             {
-                return $"{PlaceHolder1Version}.{PlaceHolder2Version}.{MajorVersion}.{MinorVersion}";
+                case ReleaseTypeEnum.BugFix:
+                    newVersionNumber = new Version(Version.Major, Version.Minor, Version.Build, Version.Revision + 1);
+                    return new Release(newVersionNumber.ToString());
+                case ReleaseTypeEnum.Feature:
+                    newVersionNumber = new Version(Version.Major, Version.Minor, Version.Build + 1, 0);
+                    return new Release(newVersionNumber.ToString());
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(releaseType), releaseType,
+                        "Unknown release type entered.");
             }
-
-            set { _versionNumber = value; }
-        }
-
-
-        public ReleaseTypeEnum ReleaseType
-        {
-            get { return (ReleaseTypeEnum) _releaseType; }
-            set { _releaseType = (int) value; }
-        }
-
-        public int PlaceHolder1Version
-        {
-            get { return _placeHolder1Version; }
-            set { _placeHolder1Version = value; }
-        }
-
-        public int PlaceHolder2Version
-        {
-            get { return _placeHolder2Version; }
-            set { _placeHolder2Version = value; }
-        }
-
-        public int MajorVersion
-        {
-            get { return _majorVersion; }
-            set { _majorVersion = value; }
-        }
-
-        public int MinorVersion
-        {
-            get { return _minorVersion; }
-            set { _minorVersion = value; }
         }
     }
 }
