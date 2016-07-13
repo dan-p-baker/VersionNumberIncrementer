@@ -6,13 +6,13 @@ namespace VersionNumberIncrementer
 {
     internal class Program
     {
-        private static IReleaseService _releaseService;
+        private static IFileService _fileService;
 
         private static void Main()
         {
             BootstrapApplication();
 
-            var currentVersion = _releaseService.ReadVersionNumberFromFile();
+            var currentVersion = _fileService.ReadVersionNumberFromFile();
 
             WriteWelcomeMessageToConsole(currentVersion);
 
@@ -26,13 +26,9 @@ namespace VersionNumberIncrementer
 
             if (Enum.TryParse(command, out releaseType))
             {
-                var release = new Release(currentVersion, (int) releaseType);
-                var strategy = _releaseService.GetVersionStrategyForReleaseType(release.ReleaseType);
-                var versionNumberStrategyService = new VersionNumberStrategyService(strategy);
-
-                versionNumberStrategyService.IncrementVersionNumber(release);
-
-                _releaseService.WriteVersionNumberToFile(release);
+                var release = new Release(currentVersion);
+                release = release.IncrementVersion(releaseType);
+                _fileService.WriteVersionNumberToFile(release);
 
                 WriteVersionNumberUpdatedMessageToConsole(release);
                 Console.Read();
@@ -58,14 +54,14 @@ namespace VersionNumberIncrementer
 
         private static void WriteVersionNumberUpdatedMessageToConsole(Release release)
         {
-            Console.WriteLine($"Thank you, the version number is now {release.VersionNumber}");
+            Console.WriteLine($"Thank you, the version number is now {release.Version}");
             Console.WriteLine("Press enter to close the application.");
         }
 
         private static void BootstrapApplication()
         {
             Bootstrap.Start();
-            _releaseService = Bootstrap.Container.GetInstance<IReleaseService>();
+            _fileService = Bootstrap.Container.GetInstance<IFileService>();
         }
     }
 }

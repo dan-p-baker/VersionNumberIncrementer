@@ -1,17 +1,18 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using VersionNumberIncrementer.Domain;
 
 namespace VersionNumberIncrementer.Test
 {
     public class VersionNumberIncrementerTests
     {
-        private static IReleaseService _releaseService;
+        private static IFileService _fileService;
 
         [SetUp]
         public void Setup()
         {
             Bootstrap.Start();
-            _releaseService = Bootstrap.Container.GetInstance<IReleaseService>();
+            _fileService = Bootstrap.Container.GetInstance<IFileService>();
         }
 
         [TestCase("1.0.0.0", "1.0.0.1")]
@@ -19,29 +20,23 @@ namespace VersionNumberIncrementer.Test
         {
             const Release.ReleaseTypeEnum releaseType = Release.ReleaseTypeEnum.BugFix;
 
-            var release = new Release(previousVersionNumber, (int)releaseType);
-            var strategy = _releaseService.GetVersionStrategyForReleaseType(release.ReleaseType);
-            var versionNumberStrategyService = new VersionNumberStrategyService(strategy);
+            var release = new Release(previousVersionNumber);
+            release = release.IncrementVersion(releaseType);
 
-            versionNumberStrategyService.IncrementVersionNumber(release);
-
-            var actualVersionNumber = release.VersionNumber;
+            var actualVersionNumber = release.Version.ToString();
 
             Assert.AreEqual(expectedVersionNumber, actualVersionNumber);
         }
 
         [TestCase("1.0.1.11", "1.0.2.0")]
-        public void Feature_command_increments_majot_version_number_by_on_and_resets_minor_version_to_zero(string previousVersionNumber, string expectedVersionNumber)
+        public void Feature_command_increments_major_version_number_by_on_and_resets_minor_version_to_zero(string previousVersionNumber, string expectedVersionNumber)
         {
             const Release.ReleaseTypeEnum releaseType = Release.ReleaseTypeEnum.Feature;
 
-            var release = new Release(previousVersionNumber, (int)releaseType);
-            var strategy = _releaseService.GetVersionStrategyForReleaseType(release.ReleaseType);
-            var versionNumberStrategyService = new VersionNumberStrategyService(strategy);
+            var release = new Release(previousVersionNumber);
+            release = release.IncrementVersion(releaseType);
 
-            versionNumberStrategyService.IncrementVersionNumber(release);
-
-            var actualVersionNumber = release.VersionNumber;
+            var actualVersionNumber = release.Version.ToString();
 
             Assert.AreEqual(expectedVersionNumber, actualVersionNumber);
         }
@@ -49,7 +44,7 @@ namespace VersionNumberIncrementer.Test
         [TestCase("1.0.0.0")]
         public void Current_version_number_can_be_read_from_ProductInfo_file(string expectedVersionNumber)
         {
-            var actualVersionNumber = _releaseService.ReadVersionNumberFromFile();
+            var actualVersionNumber = _fileService.ReadVersionNumberFromFile();
 
             Assert.IsNotNull(actualVersionNumber);
             Assert.AreEqual(expectedVersionNumber, actualVersionNumber);
@@ -59,27 +54,48 @@ namespace VersionNumberIncrementer.Test
         public void Updated_version_number_can_be_written_to_ProductInfo_file(string previousVersionNumber, string expectedVersionNumber)
         {
             const Release.ReleaseTypeEnum releaseType = Release.ReleaseTypeEnum.Feature;
-            var release = new Release(previousVersionNumber, (int)releaseType);
-            var strategy = _releaseService.GetVersionStrategyForReleaseType(release.ReleaseType);
-            var versionNumberStrategyService = new VersionNumberStrategyService(strategy);
 
-            versionNumberStrategyService.IncrementVersionNumber(release);
+            var release = new Release(previousVersionNumber);
+            release = release.IncrementVersion(releaseType);
 
-            _releaseService.WriteVersionNumberToFile(release);
+            _fileService.WriteVersionNumberToFile(release);
 
-            var versionNumberInFile = _releaseService.ReadVersionNumberFromFile();
+            var versionNumberInFile = _fileService.ReadVersionNumberFromFile();
 
             Assert.AreNotEqual(previousVersionNumber, versionNumberInFile);
             Assert.AreEqual(expectedVersionNumber, versionNumberInFile);
         }
 
+        [TestCase("1.0.1.asdf2")]
+        public void Invalid_version_number_throws_format_exception(string invalidVersionNumber)
+        {
+            Assert.Throws<FormatException>(() =>
+            {
+                var release = new Release(invalidVersionNumber);
+            });
+        }
+
+        [Test]
+        public void Attempting_to_increment_version_number_past_max_int_throws_overflow_exception()
+        {
+            const int maxInt = int.MaxValue;
+            var versionNumberAtMaxInt = $"1.0.0.{maxInt}";
+
+            const Release.ReleaseTypeEnum releaseType = Release.ReleaseTypeEnum.BugFix;
+
+            var release = new Release(versionNumberAtMaxInt);
+
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                release = release.IncrementVersion(releaseType);
+            });
+        }
+
         [TearDown]
         public void TearDown()
         {
-            const Release.ReleaseTypeEnum releaseType = Release.ReleaseTypeEnum.Feature;
-            var release = new Release("1.0.0.0", (int)releaseType);
-
-            _releaseService.WriteVersionNumberToFile(release);
+            var release = new Release("1.0.0.0");
+            _fileService.WriteVersionNumberToFile(release);
         }
     }
 }

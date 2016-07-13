@@ -11,7 +11,7 @@ namespace VersionNumberIncrementer
         {
             Container = new Container();
 
-            Container.Register<IReleaseService, ReleaseService>(Lifestyle.Singleton); 
+            Container.Register<IFileService, FileService>(Lifestyle.Singleton); 
         }
     }
 }

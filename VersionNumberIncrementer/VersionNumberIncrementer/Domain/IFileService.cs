@@ -1,10 +1,9 @@
 ﻿
 namespace VersionNumberIncrementer.Domain
 {
-    public interface IReleaseService
+    public interface IFileService
     {
         void WriteVersionNumberToFile(Release release);
         string ReadVersionNumberFromFile();
-        IVersionNumberStrategy GetVersionStrategyForReleaseType(Release.ReleaseTypeEnum releaseType);
     }
 }
