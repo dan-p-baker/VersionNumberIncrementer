@@ -1,19 +1,20 @@
 ﻿using System;
-using System.IO;
 using System.Text.RegularExpressions;
 using VersionNumberIncrementer.Domain;
-using VersionNumberIncrementer.Domain.VersionService;
 
 namespace VersionNumberIncrementer
 {
     internal class Program
     {
-        private static void Main(string[] args)
-        {
-            var currentVersion = File.ReadAllText("../../ProductInfo.Txt");
+        private static IReleaseService _releaseService;
 
-            Console.WriteLine($"Current version number is {currentVersion}");
-            Console.WriteLine("Please enter a release type...");
+        private static void Main()
+        {
+            BootstrapApplication();
+
+            var currentVersion = _releaseService.ReadVersionNumberFromFile();
+
+            WriteWelcomeMessageToConsole(currentVersion);
 
             var readLine = Console.ReadLine();
             if (readLine == null)
@@ -26,32 +27,45 @@ namespace VersionNumberIncrementer
             if (Enum.TryParse(command, out releaseType))
             {
                 var release = new Release(currentVersion, (int) releaseType);
-                var strategy = GetVersionStrategyForReleaseType(release.ReleaseType);
-                var releaseService = new ReleaseService(strategy);
-                releaseService.IncrementVersionNumber(release);
-                releaseService.WriteVersionNumberToFile(release);
-                Console.WriteLine($"Release of type: {command} created. The current version number is now {release.VersionNumber}");
-                Console.WriteLine("Please enter a release type if you wish to update the version number again...");
+                var strategy = _releaseService.GetVersionStrategyForReleaseType(release.ReleaseType);
+                var versionNumberStrategyService = new VersionNumberStrategyService(strategy);
+
+                versionNumberStrategyService.IncrementVersionNumber(release);
+
+                _releaseService.WriteVersionNumberToFile(release);
+
+                WriteVersionNumberUpdatedMessageToConsole(release);
                 Console.Read();
             }
             else
             {
-                Console.WriteLine($"Unknown Command {command}. Options are \"Bug Fix\" or \"Feature\"");
+                WriteUnknownCommandEnteredMessageToConsole(command);
                 Console.Read();
             }
         }
 
-        private static IVersionNumberStrategy GetVersionStrategyForReleaseType(Release.ReleaseTypeEnum releaseType)
+        private static void WriteWelcomeMessageToConsole(string currentVersion)
         {
-            switch (releaseType)
-            {
-                case Release.ReleaseTypeEnum.BugFix:
-                    return new MinorVersionNumberStrategy();
-                case Release.ReleaseTypeEnum.Feature:
-                    return new MajorVersionNumberStrategy();
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(releaseType), releaseType, null);
-            }
+            Console.WriteLine($"Hello, the current version number is {currentVersion}");
+            Console.WriteLine("To update the version number, please enter a release type. (Options are \"Bug Fix\" or \"Feature\")");
+        }
+
+        private static void WriteUnknownCommandEnteredMessageToConsole(string command)
+        {
+            Console.WriteLine($"{command} is an unknown command. Options are \"Bug Fix\" or \"Feature\"");
+            Console.WriteLine("Press enter to close the application.");
+        }
+
+        private static void WriteVersionNumberUpdatedMessageToConsole(Release release)
+        {
+            Console.WriteLine($"Thank you, the version number is now {release.VersionNumber}");
+            Console.WriteLine("Press enter to close the application.");
+        }
+
+        private static void BootstrapApplication()
+        {
+            Bootstrap.Start();
+            _releaseService = Bootstrap.Container.GetInstance<IReleaseService>();
         }
     }
 }

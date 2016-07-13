@@ -33,6 +33,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SimpleInjector, Version=3.2.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.3.2.0\lib\net45\SimpleInjector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,21 +51,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrap.cs" />
+    <Compile Include="Domain\IReleaseService.cs" />
+    <Compile Include="Domain\ReleaseService.cs" />
+    <Compile Include="Test\VersionNumberIncrementerTests.cs" />
     <Content Include="ProductInfo.txt" />
+    <Compile Include="Domain\IVersionNumberStrategy.cs" />
+    <Compile Include="Domain\MajorVersionNumberStrategy.cs" />
+    <Compile Include="Domain\MinorVersionNumberStrategy.cs" />
     <Compile Include="Domain\Release.cs" />
-    <Compile Include="Domain\VersionService\IVersionNumberStrategy.cs" />
-    <Compile Include="Domain\VersionService\MajorVersionNumberStrategy.cs" />
-    <Compile Include="Domain\VersionService\MinorVersionNumberStrategy.cs" />
-    <Compile Include="Domain\VersionService\ReleaseService.cs" />
+    <Compile Include="Domain\VersionNumberStrategyService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Test\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

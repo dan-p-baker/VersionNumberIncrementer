@@ -7,8 +7,8 @@ namespace VersionNumberIncrementer.Domain
     {
         public enum ReleaseTypeEnum
         {
-            Feature = 1,
-            BugFix = 2
+            Feature,
+            BugFix
         }
 
         protected int _majorVersion;
@@ -44,6 +44,7 @@ namespace VersionNumberIncrementer.Domain
 
             set { _versionNumber = value; }
         }
+
 
         public ReleaseTypeEnum ReleaseType
         {

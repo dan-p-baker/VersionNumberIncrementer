@@ -1,4 +1,4 @@
-﻿namespace VersionNumberIncrementer.Domain.VersionService
+﻿namespace VersionNumberIncrementer.Domain
 {
     public class MinorVersionNumberStrategy : IVersionNumberStrategy
     {
