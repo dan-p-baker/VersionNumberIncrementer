@@ -10,7 +10,7 @@ namespace VersionNumberIncrementer.Domain
 
         void IFileService.WriteVersionNumberToProductInfoFile(ApplicationVersion applicationVersion)
         {
-            File.WriteAllText(ProductInfoFileLocation, applicationVersion.Version.ToString());
+            File.WriteAllText(ProductInfoFileLocation, applicationVersion.ToString());
         }
 
         string IFileService.ReadVersionNumberFromProductInfoFile()

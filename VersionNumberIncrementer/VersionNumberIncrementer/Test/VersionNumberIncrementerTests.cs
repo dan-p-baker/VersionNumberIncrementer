@@ -22,10 +22,10 @@ namespace VersionNumberIncrementer.Test
         {
             const ApplicationVersion.ReleaseTypeEnum releaseType = ApplicationVersion.ReleaseTypeEnum.BugFix;
 
-            var release = new ApplicationVersion(previousVersionNumber);
-            release = release.IncrementVersion(releaseType);
+            var applicationVersion = new ApplicationVersion(previousVersionNumber);
+            applicationVersion = applicationVersion.IncrementVersion(releaseType);
 
-            var actualVersionNumber = release.Version.ToString();
+            var actualVersionNumber = applicationVersion.ToString();
 
             Assert.AreEqual(expectedVersionNumber, actualVersionNumber);
         }
@@ -35,10 +35,10 @@ namespace VersionNumberIncrementer.Test
         {
             const ApplicationVersion.ReleaseTypeEnum releaseType = ApplicationVersion.ReleaseTypeEnum.Feature;
 
-            var release = new ApplicationVersion(previousVersionNumber);
-            release = release.IncrementVersion(releaseType);
+            var applicationVersion = new ApplicationVersion(previousVersionNumber);
+            applicationVersion = applicationVersion.IncrementVersion(releaseType);
 
-            var actualVersionNumber = release.Version.ToString();
+            var actualVersionNumber = applicationVersion.ToString();
 
             Assert.AreEqual(expectedVersionNumber, actualVersionNumber);
         }
@@ -69,10 +69,10 @@ namespace VersionNumberIncrementer.Test
         {
             const ApplicationVersion.ReleaseTypeEnum releaseType = ApplicationVersion.ReleaseTypeEnum.Feature;
 
-            var release = new ApplicationVersion(previousVersionNumber);
-            release = release.IncrementVersion(releaseType);
+            var applicationVersion = new ApplicationVersion(previousVersionNumber);
+            applicationVersion = applicationVersion.IncrementVersion(releaseType);
 
-            _fileService.WriteVersionNumberToProductInfoFile(release);
+            _fileService.WriteVersionNumberToProductInfoFile(applicationVersion);
 
             var versionNumberInFile = _fileService.ReadVersionNumberFromProductInfoFile();
 
@@ -85,7 +85,7 @@ namespace VersionNumberIncrementer.Test
         {
             var actualException = Assert.Throws<FormatException>(() =>
             {
-                var release = new ApplicationVersion(invalidVersionNumber);
+                var applicationVersion = new ApplicationVersion(invalidVersionNumber);
             });
 
             Assert.AreEqual(expectedErrorMessage, actualException.Message);
@@ -99,11 +99,11 @@ namespace VersionNumberIncrementer.Test
 
             const ApplicationVersion.ReleaseTypeEnum releaseType = ApplicationVersion.ReleaseTypeEnum.BugFix;
 
-            var release = new ApplicationVersion(versionNumberAtMaxInt);
+            var applicationVersion = new ApplicationVersion(versionNumberAtMaxInt);
 
             var actualException = Assert.Throws<InvalidOperationException>(() =>
             {
-                release = release.IncrementVersion(releaseType);
+                applicationVersion = applicationVersion.IncrementVersion(releaseType);
             });
 
             Assert.AreEqual(expectedErrorMessage, actualException.Message);
@@ -117,11 +117,11 @@ namespace VersionNumberIncrementer.Test
 
             const ApplicationVersion.ReleaseTypeEnum releaseType = ApplicationVersion.ReleaseTypeEnum.BugFix;
 
-            var release = new ApplicationVersion(versionNumberAtMaxInt);
+            var applicationVersion = new ApplicationVersion(versionNumberAtMaxInt);
 
             var actualException = Assert.Throws<InvalidOperationException>(() =>
             {
-                release = release.IncrementVersion(releaseType);
+                applicationVersion = applicationVersion.IncrementVersion(releaseType);
             });
 
             Assert.AreEqual(expectedErrorMessage, actualException.Message);

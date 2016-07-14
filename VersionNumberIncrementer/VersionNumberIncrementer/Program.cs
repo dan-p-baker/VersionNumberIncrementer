@@ -26,11 +26,11 @@ namespace VersionNumberIncrementer
 
             if (Enum.TryParse(command, out releaseType))
             {
-                var release = new ApplicationVersion(currentVersion);
-                release = release.IncrementVersion(releaseType);
-                _fileService.WriteVersionNumberToProductInfoFile(release);
+                var applicationVersion = new ApplicationVersion(currentVersion);
+                applicationVersion = applicationVersion.IncrementVersion(releaseType);
+                _fileService.WriteVersionNumberToProductInfoFile(applicationVersion);
 
-                WriteVersionNumberUpdatedMessageToConsole(release);
+                WriteVersionNumberUpdatedMessageToConsole(applicationVersion);
                 Console.Read();
             }
             else

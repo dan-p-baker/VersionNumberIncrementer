@@ -11,6 +11,7 @@ namespace VersionNumberIncrementer.Domain
         }
 
         public Version Version { get; }
+        public override string ToString() => Version.ToString();
 
         public ApplicationVersion(string versionNumber)
         {
