@@ -113,9 +113,9 @@ namespace VersionNumberIncrementer.Test
         public void Attempting_to_increment_major_version_number_past_max_int_throws_InvalidOperationException(string expectedErrorMessage)
         {
             const int maxInt = int.MaxValue;
-            var versionNumberAtMaxInt = $"1.0.0.{maxInt}";
+            var versionNumberAtMaxInt = $"1.0.{maxInt}.0";
 
-            const ApplicationVersion.ReleaseTypeEnum releaseType = ApplicationVersion.ReleaseTypeEnum.BugFix;
+            const ApplicationVersion.ReleaseTypeEnum releaseType = ApplicationVersion.ReleaseTypeEnum.Feature;
 
             var applicationVersion = new ApplicationVersion(versionNumberAtMaxInt);
 
