@@ -12,7 +12,7 @@ namespace VersionNumberIncrementer
         {
             BootstrapApplication();
 
-            var currentVersion = _fileService.ReadVersionNumberFromFile();
+            var currentVersion = _fileService.ReadVersionNumberFromProductInfoFile();
 
             WriteWelcomeMessageToConsole(currentVersion);
 
@@ -22,13 +22,13 @@ namespace VersionNumberIncrementer
 
             var command = Regex.Replace(readLine, @"\s+", string.Empty);
 
-            Release.ReleaseTypeEnum releaseType;
+            ApplicationVersion.ReleaseTypeEnum releaseType;
 
             if (Enum.TryParse(command, out releaseType))
             {
-                var release = new Release(currentVersion);
+                var release = new ApplicationVersion(currentVersion);
                 release = release.IncrementVersion(releaseType);
-                _fileService.WriteVersionNumberToFile(release);
+                _fileService.WriteVersionNumberToProductInfoFile(release);
 
                 WriteVersionNumberUpdatedMessageToConsole(release);
                 Console.Read();
@@ -52,9 +52,9 @@ namespace VersionNumberIncrementer
             Console.WriteLine("Press enter to close the application.");
         }
 
-        private static void WriteVersionNumberUpdatedMessageToConsole(Release release)
+        private static void WriteVersionNumberUpdatedMessageToConsole(ApplicationVersion applicationVersion)
         {
-            Console.WriteLine($"Thank you, the version number is now {release.Version}");
+            Console.WriteLine($"Thank you, the version number is now {applicationVersion.Version}");
             Console.WriteLine("Press enter to close the application.");
         }
 
