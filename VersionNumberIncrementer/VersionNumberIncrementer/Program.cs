@@ -54,7 +54,7 @@ namespace VersionNumberIncrementer
 
         private static void WriteVersionNumberUpdatedMessageToConsole(ApplicationVersion applicationVersion)
         {
-            Console.WriteLine($"Thank you, the version number is now {applicationVersion.Version}");
+            Console.WriteLine($"Thank you, the version number is now {applicationVersion}");
             Console.WriteLine("Press enter to close the application.");
         }
 
